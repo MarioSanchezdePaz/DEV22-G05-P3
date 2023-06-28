@@ -19,16 +19,122 @@ El diseño tiene estas secciones:
   * [Castigo](#Derrota)
 - [Mecánica](#Mecánica)
   * [Avatar](#Avatar)
+  * [Robot](#Robot)
   * [Granadas](#Granadas)
-  * [Munición](#Munición)
   * [Caja de munición](#AmmoBox)
-  * [Balas](#Balas)
   * [Trampas](#Trampas)
   * [Puertas cerradas](#Puertas)
+  * [Llaves](#Llaves)
   * [Máquinas de spawn](#SpawnMachines)
-- [Contenido](#Contenido)
-  * [Zona 1](#Zona-1)
-  * [Zona 2](#Zona-2)
-  * [Zona 3](#Zona-3)
-  * [Zona 4](#Zona-4)
-  * [Zona 5](#Zona-5)
+  * [HUD](#HUD)
+- [Producción](#Produccion)
+
+##Estética:
+El juego usa texturas y materiales básicos de la carpeta StarterContent. Además se han añadido mallas y texturas puntuales para los objetos AmmoBox y Granadas (añadidas al repositorio también).
+
+##Sonidos:
+No hay música ambiente, y los sonidos usados han sido:
+- **Disparos del fusil**. Se activa al disparar el fusil.
+- **Coger AmmoBox**. Sonará tras coger la caja de munición.
+- **Coger granada**. Sonará tras coger la granada.
+- **Explosión de granada**. Sonará tras lanzar la granada y esperar a que explote.
+
+##Dinámica:
+La dinámica de este juego consiste en destruir cierto número de robots y plataformas de "spawn" para ir activando ciertas llaves y el cubo que finaliza el nivel en sí. Mediante munición limitada, granadas y trampas deberemos llevar a cabo tales tareas. Inicialmente el jugador aparecerá con una cantidad de munición y una granada, puediendo conseguir más con los bonus repartidos por el mapa. Deberá conseguir dos llaves en la primera sala: la primera se encuentra en lo alto de una rampa, y la segunda se activará cuando cierto número de robots sean destruidos. En la segunda sala habrá más enemigos y plataformas "spawn" para destruir. Cuando todas las plataformas sean eliminadas, el cubo del final de juego aparecerá.
+
+```mermaid
+stateDiagram
+    [*] --> NivelIncial
+    NivelIncial--> Objetivos
+    Objetivos --> Exito
+    Exito --> FinDelJuego
+    Objetivos --> Fracaso
+    Fracaso--> ReiniciarPartida
+    Fracaso --> Salir
+    ReiniciarPartida--> NivelInicial
+    Conducir --> Victoria
+    FinDelJuego --> Salir
+    FinDelJuego -->ReiniciarPartida
+```
+
+
+#### Objetivo
+El objetivo del juego será superar las dos salas con enemigos sin morir en el intento. Habrá que cumplir ciertas tareas para ello:
+- Eliminar 4 enemigos en la primera sala.
+- Conseguir las dos llaves para abrir las dos puertas bloqueadas.
+- Eliminar todas las plataformas "spawn" repartidas por el mapa.
+- Coger el cubo final y acabar el nivel.
+
+
+#### Castigo
+Como castigo podremos morir si no tenemos cuidado con la cantidad de robots que no ataquen, haciendo que aparezca un menú donde se nos permita reiniciar la misión o salir de la partida.
+
+##Mecánica
+Eliminar robots sin que nos maten, mientras completamos los objetivos de la pantalla.
+
+####Avatar
+El personaje proporcionado por defecto por Unreal Engine para juegos en primera persona.
+
+####Robot
+El robot será el enemigo del personaje. Tendrá una inteligencia basada en los árboles de comportamiento. Cada robot patrullará de forma interrumpida hasta que vea al jugador. Cuando esto ocurra, comenzará a perseguirle y al acercarse mucho, podrá dañarle físicamente. Reaparecerán constantemente hasta que se destruyan las plataformas que los generan. 
+
+#### Granadas
+Objeto que tras ser lanzado con la letra "G" tardará 3 segundos en explotar, eliminando cualquier actor que se encuentre en el rango de acción. El daño infligido será de 1000. El jugador comenzará con una granada, pudiendo conseguir una segunda tras comenzar el juego. 
+
+####AmmoBox
+Caja de munición que repondrás las 50 balas que puede llevar el jugador. El bonus estará repartido en varias localizaciones del mapa.
+
+
+####Trampas
+En la primera sala existirán dos trampas colgadas de un cable. Si reciben un disparo, se activarán, cayendo al suelo y eliminando cualquier actor que tengan debajo.
+
+####Puertas
+Entre la primera y segunda sala hay dos puertas bloqueadas que solo podrán ser abiertas cuando el jugador consiga las llaves de la primera sala. La primera en lo alto de una rampa, y la segunda tras eliminar 4 robots.
+
+####Llaves
+Objetos para abrir las puertas que separan las dos salas.
+
+####SpawnMachines
+Máquinas que serán capaces de hacer aparecer en el mapa a un robot. Si ese robot es eliminado, instantáneamente la máquina generará uno nuevo. Esto podrá repetirse de forma infinita. Las plataformas podrán ser destruidas igualmente por el jugador.
+
+####HUD
+En la pantalla podrán aparecer varios menús y un HUD básico para el jugador. Los menús serán de victoria y derrota, pudiendo en el primero reiniciar el nivel con mayor dificultad (enemigos con más salud) y en el segundo reiniciarlo simplemente. En ambos se podrá salir de la partida.
+El HUD básico contendrá un indicador de la salud del jugador, la cantidad de munición que lleva y las granadas, además de los objetivos para completar la misión.
+
+##Produccion
+## Producción
+
+Las tareas se han realizado y el esfuerzo ha sido repartido entre los autores.
+
+| Estado  |  Tarea  |  Fecha  |  
+|:-:|:--|:-:|
+| ✔ | Diseño: Primer borrador | 24-5-2023 |
+| ✔ | Mecánica: Robots | 31-5-2023 |
+| ✔ | Mecánica: Disparos y hitbox | 25-5-2023 |
+| ✔ | Mecánica: Objetos Bonus | 25-5-2023 |
+| ✔ | Mecánica: Árbol de comportamiento | 25-4-2023 |
+| ✔ | Mecánica: Menús, sonidos y efectos | 26-5-2023 |
+| ✔ | Mecánica: Detalles y bugs | 27-5-2023 |
+
+
+
+Las clases principales que se han desarrollados son las siguientes.
+
+```mermaid
+classDiagram
+      Actor <|-- Pawn
+      Pawn <|-- Character
+      Character <|-- FirstPersonCharacter
+      
+      Character <|-- Robot
+      Actor <|-- AmmoBox
+      Actor <|-- Granada
+      Actor <|-- Projectile
+      Actor <|-- Trampas
+      Actor <|-- Llaves
+      Actor <|-- SpawnMachine
+      Actor <|-- Puertas
+      Actor <|-- Cubo final
+      Widget <|-- Screen info
+      HUD <|-- Menus
+```
